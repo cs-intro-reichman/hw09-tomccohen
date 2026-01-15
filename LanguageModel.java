@@ -55,9 +55,9 @@ public class LanguageModel {
         {
             cd = lst2.next();
             double p = cd.count / totalCount;
-            cd.p = p;
+            lst2.current.cp.p = p;
             cp = p + cp;
-            cd.cp = cp; 
+            lst2.current.cp.cp = cp; 
         }
     }
 
