@@ -38,9 +38,28 @@ public class LanguageModel {
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
-	void calculateProbabilities(List probs) {				
-		// Your code goes here
-	}
+	void calculateProbabilities(List probs) {
+        Node current = probs.getFirstNode();				
+		ListIterator lst = new ListIterator(current);
+        int totalCount = 0;
+        CharData cd;
+        while (lst.hasNext())
+        {
+            cd = lst.next();
+            totalCount += cd.count;
+        }
+        
+        ListIterator lst2 = new ListIterator(current);
+        double cp = 0;
+        while (lst2.hasNext())
+        {
+            cd = lst2.next();
+            double p = cd.count / totalCount;
+            cd.p = p;
+            cp = p + cp;
+            cd.cp = cp; 
+        }
+    }
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
