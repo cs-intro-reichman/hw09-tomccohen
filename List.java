@@ -58,7 +58,7 @@ public class List {
 
         while (lst.hasNext())
         {
-            str = str + lst.next().toString() + "";   
+            str = str + lst.next().toString() + " ";   
         }
         return str.substring(0, str.length() - 1) + ")";
     }
