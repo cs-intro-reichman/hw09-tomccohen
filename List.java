@@ -34,6 +34,9 @@ public class List {
     public int getSize() {
  	      return size;
     }
+    public Node getFirstNode() {
+        return this.first;
+    }
 
     /** Returns the CharData of the first element in this list. */
     public CharData getFirst() {
