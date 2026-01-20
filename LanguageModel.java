@@ -54,16 +54,27 @@ public class LanguageModel {
         while (lst2.hasNext())
         {
             cd = lst2.next();
-            double p = cd.count / totalCount;
-            lst2.current.cp.p = p;
+            double p = (double) cd.count / totalCount;
+            cd.p = p;
             cp = p + cp;
-            lst2.current.cp.cp = cp; 
+            cd.cp = cp; 
         }
     }
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
-		// Your code goes here
+		double r = Math.random();
+        ListIterator it = new ListIterator(probs.getFirstNode());
+        CharData cd;
+        while (it.hasNext())
+        {
+            cd = it.next();
+            double cp = cd.cp;
+            if (cp >= r)
+            {
+                return cd.chr;
+            }
+        }
 		return ' ';
 	}
 

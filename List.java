@@ -16,19 +16,6 @@ public class List {
         first = null;
         size = 0;
     }
-
-    public static void main(String[] args) {
-    List list = new List();
-    String str = "committee_";
-    
-    // מעבר על כל אות במחרוזת ועדכון הרשימה
-    for (int i = 0; i < str.length(); i++) {
-        list.update(str.charAt(i));
-    }
-    
-    // הדפסת הרשימה הסופית לבדיקת השכיחויות
-    System.out.println(list.toString());
-}
     
     /** Returns the number of elements in this list. */
     public int getSize() {
@@ -99,7 +86,7 @@ public class List {
     public void update(char chr) {
         Node current = first;
 
-        if (indexOf(chr) < 0)
+        if (indexOf(chr) == -1)
         {
             addFirst(chr);
         }
@@ -143,7 +130,7 @@ public class List {
         }
 
         Node current = first;
-        for (int i = 0; i <index; i++)
+        for (int i = 0; i < index; i++)
         {
             current = current.next;
         }
@@ -176,4 +163,16 @@ public class List {
         // Returns an iterator that starts in that element
 	    return new ListIterator(current);
     }
+
+    public static void main(String[] args) {
+    List list = new List();
+    String str = "committee_";
+    
+    for (int i = 0; i < str.length(); i++) {
+        list.update(str.charAt(i));
+    }
+        
+    System.out.println(list.toString());
+    }
+
 }
