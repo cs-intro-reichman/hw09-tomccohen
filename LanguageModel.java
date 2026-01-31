@@ -34,26 +34,26 @@ public class LanguageModel {
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
 		In in = new In(fileName);
-        String s = "";
+        String window = "";
         for (int i = 0; i < windowLength; i++)
         {
-            s += in.readChar();
+            window += in.readChar();
         }
 
         while (!in.isEmpty())
         {
             char c = in.readChar();
-            if (CharDataMap.containsKey(s))
+            if (CharDataMap.containsKey(window))
             {
-                CharDataMap.get(s).update(c);
+                CharDataMap.get(window).update(c);
             }   
             else 
             {
                 List lst = new List();
                 lst.update(c);
-                CharDataMap.put(s,lst);
+                CharDataMap.put(window,lst);
             }
-            s = s.substring(1) + c;
+            window = window.substring(1) + c;
         }
         
         for(List val : CharDataMap.values())
@@ -112,8 +112,25 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-		// Your code goes here
-        return "";
+		if (initialText.length() < windowLength)
+        {
+            return initialText;
+        }
+        String generatedText = initialText;
+        String window = initialText.substring(initialText.length() - windowLength);
+
+        while (generatedText.length() < textLength)
+        {
+            List probs = CharDataMap.get(window);
+            if (probs == null)
+            {
+                return generatedText;
+            }
+            char c = getRandomChar(probs);
+            generatedText = generatedText + c;
+            window = window.substring(1) + c;
+        }
+        return generatedText;
 	}
 
     /** Returns a string representing the map of this language model. */
@@ -127,6 +144,20 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-		// Your code goes here
-    }
+    int windowLength = Integer.parseInt(args[0]);
+    String initialText = args[1];
+    int generatedTextLength = Integer.parseInt(args[2]);
+    Boolean randomGeneration = args[3].equals("random");
+    String fileName = args[4];
+
+    LanguageModel lm;
+    if (randomGeneration)
+        lm = new LanguageModel(windowLength);
+    else
+        lm = new LanguageModel(windowLength, 20);
+
+    lm.train(fileName);
+
+    System.out.println(lm.generate(initialText, generatedTextLength));
+}
 }
