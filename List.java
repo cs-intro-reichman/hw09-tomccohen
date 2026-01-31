@@ -153,7 +153,7 @@ public class List {
     public ListIterator listIterator(int index) {
 	    // If the list is empty, there is nothing to iterate   
 	    if (size == 0) return null;
-	    // Gets the element in position index of this list
+	    // Gets the element in position index of this list.
 	    Node current = first;
 	    int i = 0;
         while (i < index) {
