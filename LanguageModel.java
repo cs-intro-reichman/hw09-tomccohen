@@ -4,7 +4,7 @@ import java.util.Random;
 public class LanguageModel {
 
     // The map of this model.
-    // Maps windows to lists of charachter data objects.
+    // Maps windows to lists of character data objects.
     HashMap<String, List> CharDataMap;
     
     // The window length used in this model.
@@ -33,18 +33,74 @@ public class LanguageModel {
 
     /** Builds a language model from the text in the given file (the corpus). */
 	public void train(String fileName) {
-		// Your code goes here
+		In in = new In(fileName);
+        String window = "";
+        for (int i = 0; i < windowLength; i++)
+        {
+            window += in.readChar();
+        }
+
+        while (!in.isEmpty())
+        {
+            char c = in.readChar();
+            if (CharDataMap.containsKey(window))
+            {
+                CharDataMap.get(window).update(c);
+            }   
+            else 
+            {
+                List lst = new List();
+                lst.update(c);
+                CharDataMap.put(window,lst);
+            }
+            window = window.substring(1) + c;
+        }
+        
+        for(List val : CharDataMap.values())
+        {
+            calculateProbabilities(val);
+        }
 	}
 
     // Computes and sets the probabilities (p and cp fields) of all the
 	// characters in the given list. */
-	void calculateProbabilities(List probs) {				
-		// Your code goes here
-	}
+	void calculateProbabilities(List probs) {
+        Node current = probs.getFirstNode();				
+		ListIterator lst = new ListIterator(current);
+        int totalCount = 0;
+        CharData cd;
+        while (lst.hasNext())
+        {
+            cd = lst.next();
+            totalCount += cd.count;
+        }
+
+        ListIterator lst2 = new ListIterator(current);
+        double cp = 0;
+        while (lst2.hasNext())
+        {
+            cd = lst2.next();
+            double p = (double) cd.count / totalCount;
+            cd.p = p;
+            cp = p + cp;
+            cd.cp = cp; 
+        }
+    }
 
     // Returns a random character from the given probabilities list.
 	char getRandomChar(List probs) {
-		// Your code goes here
+		double r = randomGenerator.nextDouble();
+        ListIterator it = new ListIterator(probs.getFirstNode());
+        CharData cd;
+        while (it.hasNext())
+        {
+            cd = it.next();
+            double cp = cd.cp;
+            if (cp > r)
+            {
+                return cd.chr;
+            }
+        }
 		return ' ';
 	}
 
@@ -56,8 +112,27 @@ public class LanguageModel {
 	 * @return the generated text
 	 */
 	public String generate(String initialText, int textLength) {
-		// Your code goes here
-        return "";
+		if (initialText.length() < windowLength)
+        {
+            return initialText;
+        }
+        String generatedText = initialText;
+        String window = initialText.substring(initialText.length() - windowLength);
+
+        int count = 0;
+        while (count < textLength)
+        {
+            List probs = CharDataMap.get(window);
+            if (probs == null)
+            {
+                return generatedText;
+            }
+            char c = getRandomChar(probs);
+            generatedText = generatedText + c;
+            window = window.substring(1) + c;
+            count++;
+        }
+        return generatedText;
 	}
 
     /** Returns a string representing the map of this language model. */
@@ -71,6 +146,20 @@ public class LanguageModel {
 	}
 
     public static void main(String[] args) {
-		// Your code goes here
-    }
+    int windowLength = Integer.parseInt(args[0]);
+    String initialText = args[1];
+    int generatedTextLength = Integer.parseInt(args[2]);
+    Boolean randomGeneration = args[3].equals("random");
+    String fileName = args[4];
+
+    LanguageModel lm;
+    if (randomGeneration)
+        lm = new LanguageModel(windowLength);
+    else
+        lm = new LanguageModel(windowLength, 20);
+
+    lm.train(fileName);
+
+    System.out.println(lm.generate(initialText, generatedTextLength));
+}
 }
